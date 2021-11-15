@@ -17,7 +17,6 @@ app = FastAPI()
 def main():
     app
 
-
 def get_db():
     db=database.SessionLocal()
     try:
@@ -26,28 +25,29 @@ def get_db():
         db.close
 # Schema
 
-class Item(BaseModel):
-    id: int
-    email: str
-    f_name: str
-    l_name: str
+# class Item(BaseModel):
+#     id: int
+#     email: str
+#     f_name: str
+#     l_name: str
     
-    class Config:
-        schema_extra = {
-            "example": {
-                "id": 0,
-                "email": "",
-                "f_name": "",
-                "l_name": "",
-            }
-        }
+#     class Config:
+#         schema_extra = {
+#             "example": {
+#                 "id": 0,
+#                 "email": "",
+#                 "f_name": "",
+#                 "l_name": "",
+#             }
+#         }
 
 # GET {user_id}, GET /users, PUT/users, POST /users, DELETE / users.
 
 # Get Specific User by ID
-@app.get("/users/{user_id}", response_model= schemas.User)
-def read_user():
-    return 0
+@app.get("/users/{user_id}", response_model = schemas.User)
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id)
+    return db_user
 
 # Get All Users
 @app.get("/users/", response_model = List[schemas.User])
@@ -56,21 +56,26 @@ def read_users(db: Session = Depends(get_db)):
     return users
 
 # Update Specific User by ID
-@app.put("/users/")
-def update_user(
-    item_id: int,
-    item: Item = Body(
-        ...,
-        example={
-            "id": 2,
-            "email": "HelloPapiChulo@hotmail.com",
-            "f_name": "Papi",
-            "l_name": "Chulo",
-        },
-    ),
-):
-    results = {"item_id": item_id, "item": item}
-    return results
+@app.put("/users/", response_model = schemas.User)
+def update_user(user: schemas.User, db:Session = Depends(get_db)):
+    db_user = crud.update_user(db, user)
+    # results = {"user_id": user, "user": db_user}
+    return db_user
+
+#Update user with specific id (Example shown in the Example tab)
+#     item_id: int,
+#     item: Item = Body(
+#         ...,
+#         example={
+#             "id": 2,
+#             "email": "HelloPapiChulo@hotmail.com",
+#             "f_name": "Papi",
+#             "l_name": "Chulo",
+#         },
+#     ),
+# ):
+#     results = {"item_id": item_id, "item": item}
+#     return results
 
 # Add User
 @app.post("/users/", response_model = schemas.User)
@@ -85,14 +90,14 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 # Delete Specific User by Email
 @app.delete("/users/", response_model = schemas.UserDelete)
 def delete_user(user: schemas.UserDelete, db: Session = Depends(get_db)):
-    # db_user= crud.delete_user_by_email(db, user.email)
-    # return db_user
-    try:
-        db_user = crud.delete_user_by_email(db, user.email)
-        return db_user #HTTPStatus.OK.value
-    except Exception as ex:
-        print(ex)
-    
+    db_user= crud.delete_user_by_email(db, user.email)
+    return db_user
+    # try:
+    #     db_user = crud.delete_user_by_email(db, user.email)
+    #     return db_user #HTTPStatus.OK.value
+    # except Exception as ex:
+    #     print(ex)
+
 if __name__ == "__main__":
     main()
     sys.exit(main())

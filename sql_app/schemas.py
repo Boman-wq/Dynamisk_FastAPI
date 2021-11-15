@@ -16,3 +16,5 @@ class UserCreate(BaseModel):
 
 class UserDelete(BaseModel):
     email: str
+    class Config:
+        orm_mode = True
