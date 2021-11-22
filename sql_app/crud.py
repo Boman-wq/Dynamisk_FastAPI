@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from . import models
 from .schemas import UserCreate, User
 
+#CRUD: Create, Read, Update, Delete
+
 def get_users(db:Session):
     return db.query(models.User).all()
 
@@ -18,10 +20,8 @@ def delete_user_by_email(db: Session, user_email: str):
     db.commit()
     return db_user
 
-
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
-    #db_user = db.query().get(user_id)
 
 def update_user(db: Session, user: User):
     db_user = db.query(models.User).get(user.id)
