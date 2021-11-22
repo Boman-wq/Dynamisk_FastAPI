@@ -5,7 +5,6 @@ from sql_app import database, crud, models, schemas
 
 models.Base.metadata.create_all(bind=database.engine)
 
-## Main Program ##
 app = FastAPI()
 
 #access to database, read and disconnect when done#
