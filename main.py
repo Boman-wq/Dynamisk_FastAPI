@@ -2,10 +2,20 @@ from typing import List
 from fastapi import FastAPI,  Depends
 from sqlalchemy.orm import Session
 from sql_app import database, crud, models, schemas
+from fastapi.middleware.cors import CORSMiddleware
 
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 #access to database, read and disconnect when done#
 def get_db():
